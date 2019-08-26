@@ -4,20 +4,28 @@ defmodule Bandsaw.Web.ProjectPlug do
   headers in incoming requests
   """
   import Plug.Conn
-  alias Bandsaw.Project
+  alias Bandsaw.{
+    Project,
+    Environment
+  }
 
   def init(opts),
     do: {:ok, opts}
 
   def call(conn, _opts) do
-    with  [id]                        <- get_req_header(conn, "x-application-id"),
-          [key]                       <- get_req_header(conn, "x-application-key"),
-          env                         <- get_req_header(conn, "x-application-environment"),
-          env                         <- Enum.at(env, 0, "production"),
-          project when project != nil <- Project.one(id: id, key: key, environment: env) do
+    with  [id]                          <- get_req_header(conn, "x-project-id"),
+          [key]                         <- get_req_header(conn, "x-project-key"),
+          [env]                         <- get_req_header(conn, "x-project-environment"),
+          %Project{} = project          <- Project.one(id: id, key: key, environment: env),
+          %Environment{} = environment  <- Environment.one(id: env, project: project) do
       conn
-      |> assign(:project, project)
+      |> assign(:project,     project)
+      |> assign(:environment, environment)
     else
+      nil ->
+        conn
+        |> put_status(:not_found)
+        |> halt
       _ ->
         conn
         |> put_status(:forbidden)

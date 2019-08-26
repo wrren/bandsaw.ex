@@ -1,24 +1,25 @@
 defmodule Bandsaw.LogEntry do
   use Bandsaw.Schema
-  alias Bandsaw.Project
+  alias Bandsaw.Environment
   alias Bandsaw.Events
 
   defenum Level, debug: 0, info: 1, warn: 2, error: 3
 
   schema "log_entries" do
-    field :level,         Level
-    field :message,       :string
-    field :timestamp,     :utc_datetime
+    field :level,             Level
+    field :message,           :string
+    field :timestamp,         :utc_datetime
 
-    belongs_to :project,  Project
+    belongs_to :environment,  Environment
   end
 
   @doc false
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:level, :message, :timestamp, :project_id])
+    |> cast(params, [:level, :message, :timestamp, :environment_id])
     |> validate_required([:level, :message, :timestamp])
     |> validate_inclusion(:level, Level.__valid_values__())
+    |> foreign_key_constraint(:environment_id)
   end
 
   @doc """
@@ -38,6 +39,11 @@ defmodule Bandsaw.LogEntry do
     |> build_query(opts)
     |> Repo.one
   end
+  def one!(opts) when is_list(opts) and length(opts) > 0 do
+    __MODULE__
+    |> build_query(opts)
+    |> Repo.one!
+  end
 
   @doc """
   Create a new record
@@ -46,6 +52,12 @@ defmodule Bandsaw.LogEntry do
     %__MODULE__{}
     |> changeset(params)
     |> Repo.insert
+    |> Events.log_entry_created()
+  end
+  def create!(params) do
+    %__MODULE__{}
+    |> changeset(params)
+    |> Repo.insert!
     |> Events.log_entry_created()
   end
 
@@ -57,18 +69,25 @@ defmodule Bandsaw.LogEntry do
     |> changeset(params)
     |> Repo.update
   end
+  def update!(struct, params) do
+    struct
+    |> changeset(params)
+    |> Repo.update!
+  end
 
   @doc """
   Delete a record
   """
-  def delete(struct) do
-    struct
-    |> Repo.delete
-  end
+  def delete(%__MODULE__{} = struct),
+    do: Repo.delete(struct)
+  def delete!(%__MODULE__{} = struct),
+    do: Repo.delete!(struct)
 
   @doc false
-  defp build_query(query, [{:project, id} | t]),
-    do: build_query(where(query, [l], l.project_id == ^id), t)
+  defp build_query(query, [{:environment, id} | t]) when is_integer(id),
+    do: build_query(where(query, [l], l.environment_id == ^id), t)
+  defp build_query(query, [{:environment, %Environment{id: id}} | t]),
+    do: build_query(where(query, [l], l.environment_id == ^id), t)
   defp build_query(query, [{:level, level} | t]),
     do: build_query(where(query, [l], l.level == ^level), t)
   defp build_query(query, [{:order_by, {:timestamp, :desc}} | t]) do

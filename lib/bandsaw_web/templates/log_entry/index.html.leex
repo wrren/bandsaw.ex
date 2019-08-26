@@ -1,8 +1,10 @@
 <table>
     <thead>
-        <th>Level</th>
-        <th>Message</th>
-        <th>Timestamp</th>
+        <tr>
+            <th>Level</th>
+            <th>Message</th>
+            <th>Timestamp</th>
+        </tr>
     </thead>
     <tbody>
     <%= for entry <- @entries do %>
@@ -13,4 +15,3 @@
     <% end  %>
     </tbody>
 </table>
-<button phx-click="log">Create Log Entry</button>

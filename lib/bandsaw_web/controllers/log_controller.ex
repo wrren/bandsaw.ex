@@ -7,9 +7,9 @@ defmodule Bandsaw.Web.LogController do
   @doc """
   Create a new log entry
   """
-  def write(%{assigns: %{project: project}} = conn, %{"log_entries" => entries}) do
+  def write(%{assigns: %{environment: environment}} = conn, %{"log_entries" => entries}) do
     entries
-    |> Enum.map(fn entry -> Map.put(entry, "project_id", project.id) end)
+    |> Enum.map(fn entry -> Map.put(entry, "environment_id", environment.id) end)
     |> Enum.each(&Bandsaw.LogEntry.create/1)
 
     conn

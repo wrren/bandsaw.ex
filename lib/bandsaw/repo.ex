@@ -18,7 +18,17 @@ defmodule Bandsaw.Repo do
     |> offset(^offset)
     |> next.(t)
   end
-  def build_query(query, [{:id, id} | t], next) do
+  def build_query(query, [{:id, id} | t], next) when is_binary(id) do
+    query
+    |> where([r], r.id == ^String.to_integer(id))
+    |> next.(t)
+  end
+  def build_query(query, [{:id, %_{id: id}} | t], next) do
+    query
+    |> where([r], r.id == ^id)
+    |> next.(t)
+  end
+  def build_query(query, [{:id, id} | t], next) when is_integer(id) do
     query
     |> where([r], r.id == ^id)
     |> next.(t)

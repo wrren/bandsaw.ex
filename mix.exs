@@ -45,7 +45,7 @@ defmodule Bandsaw.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:ecto_enum, "~> 1.3"},
       {:event, "~> 0.2.1"},
-      {:phoenix_live_view, github: "phoenixframework/phoenix_live_view"}
+      {:phoenix_live_view, "~> 0.1"}
     ]
   end
 

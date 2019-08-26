@@ -1,12 +1,4 @@
 defmodule Bandsaw.Schema do
-  defmacro __using__(:crud) do
-    quote do
-      alias Bandsaw.Repo
-
-
-    end
-  end
-
   defmacro __using__(_) do
     quote do
       use Ecto.Schema
