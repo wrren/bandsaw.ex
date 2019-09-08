@@ -25,9 +25,15 @@ defmodule Bandsaw.Web.Router do
   scope "/", Bandsaw.Web do
     pipe_through :browser
 
-    live "/",                 ProjectLive.Index
-    live "/projects/:id",     EnvironmentLive.Index
-    live "/environments/:id", LogEntryLive.Index
+    live "/",                               ProjectLive.Index
+    live "/projects/new",                   ProjectLive.New
+    live "/projects/:id/edit",              ProjectLive.Edit
+
+    live "/projects/:id/environments",      EnvironmentLive.Index
+    live "/projects/:id/environments/new",  EnvironmentLive.New
+    live "/environments/:id/edit",          EnvironmentLive.Edit
+
+    live "/environments/:id/entries",       LogEntryLive.Index
   end
 
   # Other scopes may use custom stacks.

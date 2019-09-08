@@ -2,6 +2,7 @@ defmodule Bandsaw.LogEntry do
   use Bandsaw.Schema
   alias Bandsaw.Environment
   alias Bandsaw.Events
+  import Bandsaw.Utilities
 
   defenum Level, debug: 0, info: 1, warn: 2, error: 3
 
@@ -76,6 +77,15 @@ defmodule Bandsaw.LogEntry do
   end
 
   @doc """
+  Count log entries returned by the given query constraints
+  """
+  def count(opts \\ []) do
+    __MODULE__
+    |> build_query(opts)
+    |> Repo.aggregate(:count, :id)
+  end
+
+  @doc """
   Delete a record
   """
   def delete(%__MODULE__{} = struct),
@@ -84,15 +94,21 @@ defmodule Bandsaw.LogEntry do
     do: Repo.delete!(struct)
 
   @doc false
-  defp build_query(query, [{:environment, id} | t]) when is_integer(id),
-    do: build_query(where(query, [l], l.environment_id == ^id), t)
-  defp build_query(query, [{:environment, %Environment{id: id}} | t]),
-    do: build_query(where(query, [l], l.environment_id == ^id), t)
+  defp build_query(query, [{:environment, environment} | t]),
+    do: build_query(where(query, [l], l.environment_id == ^id(environment)), t)
+  defp build_query(query, [{:project, project} | t]) do
+    query
+    |> join(:inner, [l], e in assoc(l, :environment), as: :environment)
+    |> join(:inner, [l, environment: e], p in assoc(e, :project), on: p.id == e.project_id and p.id == ^id(project))
+    |> build_query(t)
+  end
+  defp build_query(query, [{:level, levels} | t]) when is_list(levels),
+    do: build_query(where(query, [l], l.level in ^levels), t)
   defp build_query(query, [{:level, level} | t]),
     do: build_query(where(query, [l], l.level == ^level), t)
   defp build_query(query, [{:order_by, {:timestamp, :desc}} | t]) do
     query
-    |> order_by([l], desc: l.timestamp)
+    |> order_by([l], desc: l.timestamp, desc: l.id)
     |> build_query(t)
   end
   defp build_query(query, opts),

@@ -1,0 +1,25 @@
+<div class="uk-flex">
+    <div class="uk-width-1-6@m">
+        <%= live_render @socket, Bandsaw.Web.NavigationLive.Show, session: %{context: :root} %>
+    </div>
+    <div class="uk-width-5-6@m">
+        <%= f = form_for @changeset, "#", [phx_change: :validate, phx_submit: :save, class: "col s12"] %>
+            <fieldset class="uk-fieldset">
+                <div class="uk-margin">
+                    <%= text_input f,   :name, placeholder: "My Amazing Project", class: "uk-input" %>
+                    <%= error_tag f,    :name %>
+                </div>
+            </fieldset>
+            <fieldset class="uk-fieldset">
+                <div class="uk-margin">
+                    <%= textarea f,     :description, class: "uk-textarea", rows: 5 %>
+                    <%= error_tag f,    :description %>
+                </div>
+            </fieldset>
+            <fieldset class="uk-fieldset">
+                <%= submit "Save", class: "uk-button" %>
+            </fieldset>
+        </form>
+    </div>
+</div>
+

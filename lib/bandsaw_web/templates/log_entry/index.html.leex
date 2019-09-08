@@ -1,17 +1,39 @@
-<table>
-    <thead>
-        <tr>
-            <th>Level</th>
-            <th>Message</th>
-            <th>Timestamp</th>
-        </tr>
-    </thead>
-    <tbody>
-    <%= for entry <- @entries do %>
-        <tr>
-            <td><%= entry.level %></td>
-            <td><%= entry.message %></td>
-            <td><%= entry.timestamp %></td>
-    <% end  %>
-    </tbody>
-</table>
+
+<div class="uk-flex">
+    <div class="uk-width-1-6@m">
+        <%= live_render @socket, Bandsaw.Web.NavigationLive.Show, session: %{
+            context:    :environment, 
+            id:         @environment.id,
+            project_id: @environment.project_id,
+            listener:   @self}
+        %>
+    </div>
+    <div class="uk-width-5-6@m">
+    <%= if length(@entries) > 0 do %>
+        <table class="uk-table uk-table-divider">
+            <thead>
+                <tr>
+                    <th class="uk-table-shrink">Level</th>
+                    <th class="uk-table-expand">Message</th>
+                    <th class="uk-width-1-5">Timestamp</th>
+                </tr>
+            </thead>
+            <tbody>
+            <%= for entry <- @entries do %>
+                <tr class="log-level-<%= entry.level %>">
+                    <td class="uk-table-shrink"><%= String.capitalize(Atom.to_string(entry.level)) %></td>
+                    <td class="uk-table-expand"><%= entry.message %></td>
+                    <td class="uk-width-1-5"><%= entry.timestamp %></td>
+                </tr>
+            <% end  %>
+            </tbody>
+        </table>
+    </div>
+    <% else %>
+    <div>
+        <div class="uk-background-muted uk-padding uk-panel uk-text-center">
+            <p class="uk-h4">No log entries have been recorded that match the given filters.</p>
+        </div>
+    </div>
+    <% end %>
+</div>

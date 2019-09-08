@@ -10,11 +10,13 @@ defmodule Bandsaw.Environment do
     LogEntry,
     Environment
   }
+  import Bandsaw.Utilities
 
   schema "environments" do
     field :name,        :string
+    field :description, :string
     field :key,         :string
-    field :entry_count, :integer, virtual: true
+    field :entry_count, :integer, virtual: true, default: 0
 
     belongs_to  :project,     Project
     has_many    :log_entries, LogEntry
@@ -25,10 +27,11 @@ defmodule Bandsaw.Environment do
   @doc false
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:name, :key, :project_id])
+    |> cast(params, [:name, :description, :key, :project_id])
     |> maybe_put_key(:key)
-    |> validate_required([:name, :key])
+    |> validate_required([:name, :description, :key])
     |> validate_length(:name, min: 3)
+    |> validate_length(:description, min: 3)
     |> unique_constraint(:name, name: :environments_project_id_name_index)
     |> foreign_key_constraint(:project_id)
   end
@@ -133,10 +136,8 @@ defmodule Bandsaw.Environment do
   @doc false
   defp build_query(query, [{:name, name} | t]),
     do: build_query(where(query, [e], e.name == ^name), t)
-  defp build_query(query, [{:project, project_id} | t]) when is_integer(project_id),
-    do: build_query(where(query, [e], e.project_id == ^project_id), t)
-  defp build_query(query, [{:project, %Project{id: project_id}} | t]),
-    do: build_query(where(query, [e], e.project_id == ^project_id), t)
+  defp build_query(query, [{:project, project} | t]),
+    do: build_query(where(query, [e], e.project_id == ^id(project)), t)
   defp build_query(query, [{:count, :entries} | t]) do
     query
     |> join(:left, [e], l in subquery(count_log_entries_query()), on: e.id == l.environment_id, as: :count)

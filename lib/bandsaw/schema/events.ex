@@ -31,6 +31,18 @@ defmodule Bandsaw.Events do
     do: other
 
   @doc false
+  def project_deleted({:ok, project}) do
+    async_notify(__MODULE__, {:project_deleted, project})
+    {:ok, project}
+  end
+  def project_deleted(%Project{} = project) do
+    async_notify(__MODULE__, {:project_deleted, project})
+    project
+  end
+  def project_deleted(other),
+    do: other
+
+  @doc false
   def environment_created({:ok, environment}) do
     async_notify(__MODULE__, {:environment_created, environment})
     {:ok, environment}

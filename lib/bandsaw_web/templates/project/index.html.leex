@@ -1,6 +1,6 @@
 <div class="uk-flex">
     <div class="uk-width-1-6@m">
-        <%= live_render @socket, Bandsaw.Web.NavigationLive.Show, session: %{context: :project, id: @project.id} %>
+        <%= live_render @socket, Bandsaw.Web.NavigationLive.Show, session: %{context: :root} %>
     </div>
     <div class="uk-width-5-6@m">
         <div class="uk-grid-match uk-grid-row-large" phx-hook="grid" uk-grid>
@@ -9,38 +9,38 @@
                     <span uk-icon="icon: plus; ratio: 3" class="uk-position-center" phx-hook="icon"></span>
                 </div>
             </div>
-            <%= for environment <- @environments do %>
+            <%= for project <- @projects do %>
             <div class="uk-width-1-3">
-                <div class="<%= card_class(environment) %>">
+                <div class="<%= card_class(project) %>">
                     <div class="uk-card-body">
-                        <div class="uk-card-badge uk-label"><%= environment.entry_count || 0 %></div>
+                        <div class="uk-card-badge uk-label"><%= project.entry_count || 0 %></div>
                         <h3 class="uk-card-title">
-                            <%= link environment.name, to: Routes.live_path(@socket, Bandsaw.Web.LogEntryLive.Index, environment.id) %>
+                            <%= link project.name, to: Routes.live_path(@socket, Bandsaw.Web.EnvironmentLive.Index, project.id) %>
                         </h3>
-                        <p><%= environment.description %></p>
+                        <p><%= project.description %></p>
                     </div>
                     <div class="uk-card-footer">
-                        <%= if Map.get(environment, :is_deleting?, false) do %>
+                        <%= if Map.get(project, :is_deleting?, false) do %>
                             <a  class="uk-button uk-button-text uk-margin-right" 
                                 phx-click="confirm-delete"
-                                phx-value="<%= environment.id %>"
+                                phx-value="<%= project.id %>"
                             > 
                             Confirm
                             </a>
                             <a  class="uk-button uk-button-text uk-margin-right" 
                                 phx-click="cancel-delete"
-                                phx-value="<%= environment.id %>"
+                                phx-value="<%= project.id %>"
                             > 
                             Cancel
                             </a>
                         <% else %>
-                            <%= link to: Routes.live_path(@socket, Bandsaw.Web.EnvironmentLive.Edit, environment.id), 
+                            <%= link to: Routes.live_path(@socket, Bandsaw.Web.ProjectLive.Edit, project.id), 
                                 class: "uk-button uk-button-text uk-margin-right" do %>
                             Edit
                             <% end %>
                             <a  class="uk-button uk-button-text uk-margin-right" 
                                 phx-click="maybe-delete"
-                                phx-value="<%= environment.id %>"
+                                phx-value="<%= project.id %>"
                             > 
                             Delete
                             </a>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Bandsaw · Phoenix Framework</title>
+    <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
+  </head>
+  <body>
+    <header>
+      <nav class="uk-navbar-container uk-margin" uk-navbar>
+        <div class="uk-navbar-left">
+            <a class="uk-navbar-item uk-logo" href="/">Bandsaw</a>
+        </div>
+    </nav>
+    </header>
+    <div class="uk-container">
+      <%= if get_flash(@conn, :info) != nil do %>
+        <p class="flash" phx-hook="Flash"><%= get_flash(@conn, :info) %></p>
+      <% end %>
+      <%= if get_flash(@conn, :error) != nil do %>
+        <p class="flash" phx-hook="Flash"><%= get_flash(@conn, :error) %></p>
+      <% end %>
+      <%= render @view_module, @view_template, assigns %>
+    </div>
+    <script type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
+  </body>
+</html>

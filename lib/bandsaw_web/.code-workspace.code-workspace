@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "/home/warren/Development/bandsaw_backend"
+		},
+		{
+			"path": "/home/warren/Development/bandsaw"
+		}
+	],
+	"remoteAuthority": "wsl+Ubuntu-18.04",
+	"settings": {}
+}

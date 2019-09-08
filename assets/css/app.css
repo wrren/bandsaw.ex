@@ -1,4 +1,32 @@
 /* This file is for your main application css. */
 
-@import "./phoenix.css";
-@import "../../deps/phoenix_live_view/assets/css/live_view.css";
+p.flash {
+    visibility: hidden;
+}
+
+#main-container {
+    margin-top: 20px;
+}
+
+.uk-card-hover {
+    cursor: pointer;
+}
+
+.uk-card {
+    min-height: 200px;
+}
+
+tr.log-level-error {
+    background-color: rgba(199, 16, 16, 0.3);
+    color: rgb(46, 46, 46);
+}
+
+tr.log-level-warn {
+    background-color: rgba(167, 88, 24, 0.3);
+    color: rgb(46, 46, 46);
+}
+
+tr.log-level-debug {
+    background-color: rgba(24, 110, 167, 0.3);
+    color: rgb(46, 46, 46);
+}

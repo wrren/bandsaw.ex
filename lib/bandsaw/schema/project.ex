@@ -2,11 +2,14 @@ defmodule Bandsaw.Project do
   use Bandsaw.Schema
   alias Bandsaw.{
     Events,
-    Environment
+    Environment,
+    LogEntry
   }
 
   schema "projects" do
     field :name,        :string
+    field :description, :string
+    field :entry_count, :integer, virtual: true, default: 0
 
     has_many :environments, Environment
 
@@ -16,8 +19,10 @@ defmodule Bandsaw.Project do
   @doc false
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:name])
-    |> validate_required([:name])
+    |> cast(params, [:name, :description])
+    |> validate_required([:name, :description])
+    |> validate_length(:name, min: 3)
+    |> validate_length(:description, min: 3)
     |> unique_constraint(:name)
   end
 
@@ -80,13 +85,34 @@ defmodule Bandsaw.Project do
   Delete a record
   """
   def delete(%__MODULE__{} = struct),
-    do: Repo.delete(struct)
+    do: Events.project_deleted(Repo.delete(struct))
   def delete!(%__MODULE__{} = struct),
-    do: Repo.delete!(struct)
+    do: Events.project_deleted(Repo.delete!(struct))
 
   @doc false
   defp build_query(query, [{:name, name} | t]),
     do: build_query(where(query, [p], p.name == ^name), t)
+  defp build_query(query, [{:count, :entries} | t]) do
+    query
+    |> join(:left, [p], l in subquery(count_log_entries_query()), on: p.id == l.project_id, as: :count)
+    |> select_merge([p, count: c], %{entry_count: c.count})
+    |> build_query(t)
+  end
+  defp build_query(query, [{:join, :environments} | t]) do
+    query
+    |> join(:inner, [p], e in assoc(p, :environments), as: :environments)
+    |> preload([p, environments: e], [environments: e])
+    |> build_query(t)
+  end
   defp build_query(query, opts),
     do: Repo.build_query(query, opts, &(build_query(&1, &2)))
+
+  @doc false
+  defp count_log_entries_query do
+    LogEntry
+    |> join(:inner, [l], e in assoc(l, :environment), as: :environment)
+    |> join(:inner, [l, e], p in assoc(e, :project), as: :project)
+    |> group_by([project: p], p.id)
+    |> select([project: p], %{project_id: p.id, count: count(p.id)})
+  end
 end
