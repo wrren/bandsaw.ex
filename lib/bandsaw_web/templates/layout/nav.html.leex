@@ -11,7 +11,7 @@
     </li>
     <%= if @context in [:project, :environment] and length(@environments) > 0 do %>
     <li class="uk-parent uk-open">
-        <a href="#">Environments</a>
+        <%= live_link "Environment", to: Routes.live_path(@socket, Bandsaw.Web.EnvironmentLive.Index, @project_id) %>
         <ul class="uk-nav-sub">
         <%= for environment <- @environments do %>
             <li <%= if Map.get(environment, :is_active?) do %>class="uk-active"<% end %>>
@@ -30,6 +30,11 @@
                 <a href="#" phx-click="level" phx-value="<%= level.name %>"><%= level.name %></a>
             </li>
         <% end %>
+            <li>
+                <span uk-icon="icon: chevron-left; ratio: 0.5" class="limit-adjuster" phx-hook="icon" phx-click="limit-down"></span>
+                <%= @limit %>
+                <span uk-icon="icon: chevron-right; ratio: 0.5" class="limit-adjuster" phx-hook="icon" phx-click="limit-up"></span>
+            </li>
         </ul>
     </li>
     <% end %>

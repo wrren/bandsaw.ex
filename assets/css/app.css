@@ -30,3 +30,7 @@ tr.log-level-debug {
     background-color: rgba(24, 110, 167, 0.3);
     color: rgb(46, 46, 46);
 }
+
+span.limit-adjuster {
+    cursor: pointer;
+}
