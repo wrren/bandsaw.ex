@@ -100,7 +100,7 @@ defmodule Bandsaw.Project do
   end
   defp build_query(query, [{:join, :environments} | t]) do
     query
-    |> join(:inner, [p], e in assoc(p, :environments), as: :environments)
+    |> join(:left, [p], e in assoc(p, :environments), as: :environments)
     |> preload([p, environments: e], [environments: e])
     |> build_query(t)
   end

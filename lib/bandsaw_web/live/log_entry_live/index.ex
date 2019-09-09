@@ -7,34 +7,15 @@ defmodule Bandsaw.Web.LogEntryLive.Index do
     Event.Adapter.start_link([Bandsaw.Events], self())
     {:ok, select_environment(id, socket)}
   end
-  def mount(_session, socket) do
-    Event.Adapter.start_link([Bandsaw.Events], self())
-    {:ok, select_environment(socket)}
-  end
 
   #
   # Select a new Environment
   #
-  defp select_environment(socket) do
-    with  {:projects, [project | _] = projects}   <- {:projects, Bandsaw.list_projects(join: :environments)},
-          {:environments, [environment | _]}      <- {:environments, project.environment} do
-      assign(socket, %{
-        projects:     projects,
-        environment:  environment,
-        self:         self(),
-        limit:        100,
-        levels:       [:error, :warn, :debug, :info]
-      })
-      |> load_entries()
-    else
-      _ -> socket
-    end
-  end
   defp select_environment(id, socket) do
     with  {:environment, environment} when environment != nil <- {:environment, Bandsaw.get_environment(id: id)},
-          {:projects, projects}                               <- {:projects, Bandsaw.list_projects(join: :environments)} do
+          {:project, project}                                 <- {:project, Bandsaw.get_project(id: environment.project_id)} do
       assign(socket, %{
-        projects:     projects,
+        project:      project,
         environment:  environment,
         self:         self(),
         limit:        100,

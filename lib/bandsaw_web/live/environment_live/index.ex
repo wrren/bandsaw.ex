@@ -3,10 +3,12 @@ defmodule Bandsaw.Web.EnvironmentLive.Index do
   Displays a list of Environments associated with a given Project
   """
   use Bandsaw.Web, :live
+  alias Bandsaw.LogEntry
 
   def mount(id, socket) when is_binary(id),
     do: mount(%{project: id}, socket)
   def mount(%{project: id}, socket) do
+    Event.Adapter.start_link([Bandsaw.Events], self())
     {:ok, assign(socket, %{
       project:      Bandsaw.get_project(id: id),
       environments: Bandsaw.list_environments(project: id, count: :entries)
@@ -37,4 +39,19 @@ defmodule Bandsaw.Web.EnvironmentLive.Index do
     end))}
   def handle_event("new", _, %{assigns: %{project: project}} = socket),
     do: {:noreply, live_redirect(socket, to: Routes.live_path(socket, Bandsaw.Web.EnvironmentLive.New, project.id))}
+
+  def handle_info({:log_entry_created,entry}, socket),
+    do: {:noreply, update_entry_count(socket, entry)}
+
+  @doc false
+  defp update_entry_count(%{assigns: %{environments: environments}} = socket, %LogEntry{environment_id: id}) do
+    socket
+    |> assign(:environments, Enum.map(environments, fn %{entry_count: count} = environment ->
+      if environment.id == id do
+        %{environment | entry_count: count + 1}
+      else
+        environment
+      end
+    end))
+  end
 end

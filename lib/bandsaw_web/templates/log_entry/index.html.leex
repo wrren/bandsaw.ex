@@ -9,6 +9,8 @@
         %>
     </div>
     <div class="uk-width-5-6@m">
+    <h2 class="uk-heading-line uk-text-center"><span><%= @project.name %> <%= @environment.name %> Log Entries</span></h2>
+
     <%= if length(@entries) > 0 do %>
         <table class="uk-table uk-table-divider">
             <thead>
