@@ -20,6 +20,14 @@ defmodule Bandsaw.Web.EnvironmentLive.Index do
   def handle_params(_params, _url, socket),
     do: {:noreply, socket}
 
+  def handle_event("show-key", id, %{assigns: %{environments: environments}} = socket),
+    do: {:noreply, assign(socket, :environments, Enum.map(environments, fn e ->
+      if String.to_integer(id) == e.id do Map.put(e, :show_key?, true) else e end
+    end))}
+  def handle_event("hide-key", id, %{assigns: %{environments: environments}} = socket),
+    do: {:noreply, assign(socket, :environments, Enum.map(environments, fn e ->
+      if String.to_integer(id) == e.id do Map.put(e, :show_key?, false) else e end
+    end))}
   def handle_event("maybe-delete", id, %{assigns: %{environments: environments}} = socket),
     do: {:noreply, assign(socket, :environments, Enum.map(environments, fn e ->
       if String.to_integer(id) == e.id do Map.put(e, :is_deleting?, true) else e end
@@ -45,7 +53,7 @@ defmodule Bandsaw.Web.EnvironmentLive.Index do
   def handle_info(_info, socket),
     do: {:noreply, socket}
 
-  defp load_environment(%{assigns: %{project: %{id: id}}} = socket, _id),
+  defp load_environment(%{assigns: %{project: %{id: id}}} = socket, id),
     do: socket
   defp load_environments(socket, project_id) do
     socket

@@ -18,7 +18,11 @@
                         <h3 class="uk-card-title">
                             <%= link environment.name, to: Routes.live_path(@socket, Bandsaw.Web.LogEntryLive.Index, environment.id) %>
                         </h3>
+                        <%= if Map.get(environment, :show_key?, false) do %>
+                        <p><%= environment.key %></p>
+                        <% else %>
                         <p><%= environment.description %></p>
+                        <% end %>
                     </div>
                     <div class="uk-card-footer">
                         <%= if Map.get(environment, :is_deleting?, false) do %>
@@ -45,6 +49,21 @@
                             > 
                             Delete
                             </a>
+                            <%= if Map.get(environment, :show_key?, false) do %>
+                            <a  class="uk-button uk-button-text uk-margin-right" 
+                                phx-click="hide-key"
+                                phx-value="<%= environment.id %>"
+                            > 
+                            Hide Key
+                            </a>
+                            <% else %>
+                            <a  class="uk-button uk-button-text uk-margin-right" 
+                                phx-click="show-key"
+                                phx-value="<%= environment.id %>"
+                            > 
+                            Show Key
+                            </a>
+                            <% end %>
                         <% end %>
                     </div>
                 </div>

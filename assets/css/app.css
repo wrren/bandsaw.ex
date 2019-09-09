@@ -13,7 +13,11 @@ p.flash {
 }
 
 .uk-card {
-    min-height: 200px;
+    min-height: 250px;
+}
+
+.uk-card > .uk-card-body {
+    min-height: 100px;
 }
 
 th.log-level {
