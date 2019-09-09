@@ -26,6 +26,7 @@ UIkit.use(Icons);
 const Hooks = {
     icon: {
         mounted() {
+            delete this.el.__uikit__
             UIkit.icon(this.el)
         },
         updated() {

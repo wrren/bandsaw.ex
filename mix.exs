@@ -45,6 +45,7 @@ defmodule Bandsaw.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:ecto_enum, "~> 1.3"},
       {:event, "~> 0.2.1"},
+      {:timex, "~> 3.6"},
       {:phoenix_live_view, "~> 0.1"}
     ]
   end

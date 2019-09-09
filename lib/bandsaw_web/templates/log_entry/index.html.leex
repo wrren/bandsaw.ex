@@ -15,17 +15,17 @@
         <table class="uk-table uk-table-divider">
             <thead>
                 <tr>
-                    <th class="uk-table-shrink">Level</th>
+                    <th class="uk-table-shrink log-level">Level</th>
                     <th class="uk-table-expand">Message</th>
-                    <th class="uk-width-1-5">Timestamp</th>
+                    <th class="uk-width-1-6">Logged</th>
                 </tr>
             </thead>
             <tbody>
             <%= for entry <- @entries do %>
                 <tr class="log-level-<%= entry.level %>">
-                    <td class="uk-table-shrink"><%= String.capitalize(Atom.to_string(entry.level)) %></td>
+                    <td class="uk-table-shrink log-level"><%= String.capitalize(Atom.to_string(entry.level)) %></td>
                     <td class="uk-table-expand"><%= entry.message %></td>
-                    <td class="uk-width-1-5"><%= entry.timestamp %></td>
+                    <td class="uk-width-1-6"><%= entry.from_now %></td>
                 </tr>
             <% end  %>
             </tbody>

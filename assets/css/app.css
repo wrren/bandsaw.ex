@@ -16,6 +16,14 @@ p.flash {
     min-height: 200px;
 }
 
+th.log-level {
+    min-width: 5em;
+}
+
+td.log-level {
+    min-width: 5em;
+}
+
 tr.log-level-error {
     background-color: rgba(199, 16, 16, 0.3);
     color: rgb(46, 46, 46);

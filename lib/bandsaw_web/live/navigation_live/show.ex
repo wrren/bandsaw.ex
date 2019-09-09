@@ -34,7 +34,7 @@ defmodule Bandsaw.Web.NavigationLive.Show do
       environments: Enum.map(Bandsaw.list_environments(project: project_id), fn e ->
         if e.id == id do Map.put(e, :is_active?, true) else e end
       end),
-      levels: Enum.map(Bandsaw.LogEntry.Level.__enum_map__(), fn {name, value} ->
+      levels: Enum.map(Bandsaw.LogEntry.Level.__enum_map__(), fn {name, _value} ->
         %{name: name, is_active?: true, count: Bandsaw.count_log_entries(level: name, environment: id)}
       end),
       listener:     pid,

@@ -21,7 +21,7 @@ defmodule Bandsaw.Web.ProjectLive.New do
 
   def handle_event("save", %{"project" => params}, socket) do
     case Bandsaw.create_project(params) do
-      {:ok, project} ->
+      {:ok, _project} ->
         {:stop,
           socket
           |> put_flash(:info, "Project Created")

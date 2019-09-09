@@ -5,20 +5,20 @@ defmodule Bandsaw.Web.EnvironmentLive.Index do
   use Bandsaw.Web, :live
   alias Bandsaw.LogEntry
 
-  def mount(id, socket) when is_binary(id),
+  def mount(%{path_params: %{"id" => id}}, socket),
     do: mount(%{project: id}, socket)
   def mount(%{project: id}, socket) do
     Event.Adapter.start_link([Bandsaw.Events], self())
-    {:ok, assign(socket, %{
-      project:      Bandsaw.get_project(id: id),
-      environments: Bandsaw.list_environments(project: id, count: :entries)
-    })}
+    {:ok, load_environments(socket, id)}
   end
-  def mount(%{path_params: %{"id" => id}}, socket),
-    do: mount(%{project: id}, socket)
 
   def render(assigns),
     do: Bandsaw.Web.EnvironmentView.render("index.html", assigns)
+
+  def handle_params(%{"id" => id}, _url, socket),
+    do: {:noreply, load_environments(socket, String.to_integer(id))}
+  def handle_params(_params, _url, socket),
+    do: {:noreply, socket}
 
   def handle_event("maybe-delete", id, %{assigns: %{environments: environments}} = socket),
     do: {:noreply, assign(socket, :environments, Enum.map(environments, fn e ->
@@ -44,6 +44,16 @@ defmodule Bandsaw.Web.EnvironmentLive.Index do
     do: {:noreply, update_entry_count(socket, entry)}
   def handle_info(_info, socket),
     do: {:noreply, socket}
+
+  defp load_environment(%{assigns: %{project: %{id: id}}} = socket, _id),
+    do: socket
+  defp load_environments(socket, project_id) do
+    socket
+    |> assign(%{
+      project:      Bandsaw.get_project(id: project_id),
+      environments: Bandsaw.list_environments(project: project_id, count: :entries)
+    })
+  end
 
   @doc false
   defp update_entry_count(%{assigns: %{environments: environments}} = socket, %LogEntry{environment_id: id}) do
