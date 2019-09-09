@@ -41,6 +41,8 @@ defmodule Bandsaw.Web.ProjectLive.Index do
 
   def handle_info({:log_entry_created,entry}, socket),
     do: {:noreply, update_entry_count(socket, entry)}
+  def handle_info(_info, socket),
+    do: {:noreply, socket}
 
   @doc false
   defp update_entry_count(%{assigns: %{projects: projects}} = socket, %LogEntry{environment_id: id}) do
