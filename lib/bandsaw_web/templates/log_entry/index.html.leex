@@ -12,10 +12,9 @@
     <h2 class="uk-heading-line uk-text-center"><span><%= @project.name %> <%= @environment.name %> Log Entries</span></h2>
 
     <%= if length(@entries) > 0 do %>
-        <table class="uk-table uk-table-divider">
+        <table class="uk-table uk-table-divider uk-table-small">
             <thead>
                 <tr>
-                    <th class="uk-table-shrink log-level">Level</th>
                     <th class="uk-table-expand">Message</th>
                     <th class="uk-width-1-6">Logged</th>
                 </tr>
@@ -23,7 +22,6 @@
             <tbody>
             <%= for entry <- @entries do %>
                 <tr class="log-level-<%= entry.level %>">
-                    <td class="uk-table-shrink log-level"><%= String.capitalize(Atom.to_string(entry.level)) %></td>
                     <td class="uk-table-expand"><%= entry.message %></td>
                     <td class="uk-width-1-6"><%= entry.from_now %></td>
                 </tr>
